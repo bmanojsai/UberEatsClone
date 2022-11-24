@@ -1,13 +1,12 @@
 import { View, Text, TouchableOpacity, } from 'react-native';
 import React, {useState} from 'react';
 
-function HeaderTabs() {
-    const [activeTab, setActiveTab] = useState("Delivery")
-
+function HeaderTabs({activeTab,setActiveTab}) {
+    
   return (
     <View style = {{flexDirection : "row", alignSelf:"center",marginTop : 10}}>
-      <HeaderButton btnText = "Delivery" activeTab= {activeTab} setActiveTab= {setActiveTab}/>
-      <HeaderButton btnText = "Pick up"  activeTab ={activeTab} setActiveTab = {setActiveTab} />
+      <HeaderButton btnText = "Restaurant" activeTab= {activeTab} setActiveTab= {setActiveTab}/>
+      <HeaderButton btnText = "Bar"  activeTab ={activeTab} setActiveTab = {setActiveTab} />
     </View>
   )
 }

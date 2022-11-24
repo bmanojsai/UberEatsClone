@@ -4,22 +4,28 @@ import Geolocation from "react-native-geolocation-service";
 import Geocoder from "react-native-geocoding";
 import axios from "axios";
 import { GOOGLE_PLACES_API_KEY } from "@env";
+import Reactotron from "reactotron-react-native";
 
-import HeaderTabs from "../components/HeaderTabs";
-import SearchBar from "../components/SearchBar";
-import Categories from "../components/Categories";
-import RestaurentItems from "../components/RestaurentItems";
+import HeaderTabs from "../components/home/HeaderTabs";
+import SearchBar from "../components/home/SearchBar";
+import Categories from "../components/home/Categories";
+import RestaurentItems from "../components/home/RestaurentItems";
 
-import { localRestaurents } from "../components/RestaurentItems";
+import { localRestaurents } from "../components/home/RestaurentItems";
+import reactotron from "reactotron-react-native";
+import {Divider} from "react-native-elements";
+import BottomTabs from "../components/home/BottomTabs";
 
 export default function HomeScreen() {
-  const [restaurentData1, setrestaurentData1] = useState(localRestaurents);
-  const [location, setLocation] = useState();
-  const [fullRestaurentData, setfullRestaurentData] = useState([]);
-  const [restaurentData, setrestaurentData] = useState([]);
+  //const [oldLocation, setOldLocation] = useState({});
+  const [location, setLocation] = useState({});
+  const [fullPlacesData, setFullPLacesData] = useState([]);
+  const [restaurantData, setrestaurantData] = useState([]);
+  const [barData, setBarData] = useState([]);
   const [searchCity, setSearchCity] = useState(" ");
+  const [activeTab, setActiveTab] = useState("Restaurant");
 
-  const dummyResData = [
+  const dummyplacesData = [
     {
       business_status: "CLOSED_PERMANENTLY",
       geometry: {
@@ -288,7 +294,16 @@ export default function HomeScreen() {
                 position.coords.latitude,
                 position.coords.longitude
               );
-              setLocation({"lat":position.coords.latitude,"lng": position.coords.longitude });
+              setrestaurantData([]);
+              setBarData([]);
+              // setOldLocation({
+              //   lat: position.coords.latitude,
+              //   lng: position.coords.longitude,
+              // });
+              setLocation({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              });
             },
             (error) => {
               console.log(error.code, error.message);
@@ -301,42 +316,81 @@ export default function HomeScreen() {
             .then((json) => {
               var location1 = json.results[0].geometry.location;
               console.log("*-*-*-*", location1);
-              setLocation(location1)
+              setrestaurantData([]);
+              setBarData([]);
+              //setOldLocation(location);
+              setLocation(location1);
             })
             .catch((error) => console.warn(error.origin));
         }
+        // Reactotron.log(
+        //   "In getLocalatLng func --> ",
+        //   oldLocation,
+        //   location,
+        //   restaurantData,
+        //   barData
+        // );
       })
       .catch((error) => console.log(error));
   };
 
-  const getRestaurentsNearLocation = async () => {
+  const getPlacesNearLocation = async () => {
     if (location.lat && location.lng) {
       var config = {
         method: "get",
-        url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat}%2C${location.lng}&radius=1500&type=restaurant&key=${GOOGLE_PLACES_API_KEY}`,
+        url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${
+          location.lat
+        }%2C${
+          location.lng
+        }&radius=1500&type=${activeTab.toLocaleLowerCase()}&key=${GOOGLE_PLACES_API_KEY}`,
         headers: {},
       };
 
       try {
-        const resData = await axios(config);
-        console.log("********", resData.data.results);
-        setfullRestaurentData(resData.data.results);
+        
+        Reactotron.log(activeTab,restaurantData,barData)
+        if (activeTab == "Restaurant" && restaurantData.length == 0) {
+          const placesData = await axios(config);
+          console.log("********", placesData.data.results);
+          setFullPLacesData(placesData.data.results);
+          reactotron.log("Active Restaurant && []");
+        } else if (activeTab == "Bar" && barData.length == 0) {
+          const placesData = await axios(config);
+          console.log("********", placesData.data.results);
+          setFullPLacesData(placesData.data.results);
+          reactotron.log("Active Bar && []");
+        } else {
+          //since data is alreacy present, no need to fetch again
+          //since location changed , we need to  fetch new data and show the feed
+          // const placesData = await axios(config);
+          // console.log("********", placesData.data.results);
+          // setFullPLacesData(placesData.data.results);
+          // reactotron.log("different locations");
+          Reactotron.log("Nothing is happening")
+        }
       } catch (error) {
-        console.log("error while getting restaurents", error);
+        console.log("error while getting places", error);
       }
     }
+    // Reactotron.log(
+    //   "In getPlacesNearLocation func --> ",
+    //   oldLocation,
+    //   location,
+    //   restaurantData,
+    //   barData
+    // );
   };
 
-  const filterResData = () => {
-    // const availableRestaurents = dummyResData.filter(
-    //   (res) => res.business_status !== "CLOSED_PERMANENTLY"
-    // );
-    //change comments for real world workings
-    const availableRestaurents = fullRestaurentData.filter(
+  const filterplacesData = () => {
+    const availableRestaurents = dummyplacesData.filter(
       (res) => res.business_status !== "CLOSED_PERMANENTLY"
     );
+    //change comments for real world workings
+    // const availableRestaurents = fullPlacesData.filter(
+    //   (res) => res.business_status !== "CLOSED_PERMANENTLY"
+    // );
 
-    const properResData = availableRestaurents.map((res) => {
+    const properplacesData = availableRestaurents.map((res) => {
       return {
         name: res.name,
         rating: res.rating ? res.rating : "-",
@@ -348,34 +402,50 @@ export default function HomeScreen() {
       };
     });
 
-    setrestaurentData(properResData);
+    if (activeTab === "Restaurant") {
+      setrestaurantData(properplacesData);
+    } else {
+      setBarData(properplacesData);
+    }
 
-    //console.log("-----",properResData)
+    // Reactotron.log(
+    //   "In filterplacesData func --> ",
+    //   oldLocation,
+    //   location,
+    //   restaurantData,
+    //   barData
+    // );
+
+    //console.log("-----",properplacesData)
   };
 
   useEffect(() => {
-    getUserLocationInLatLong(searchCity);
+    //getUserLocationInLatLong(searchCity);
   }, [searchCity]);
 
   useEffect(() => {
     //costs for every api call--> so use carefully
-    getRestaurentsNearLocation();
-  }, [location]);
+    //getPlacesNearLocation();
+  }, [location, activeTab]);
 
   useEffect(() => {
-    filterResData();
-  }, [fullRestaurentData]);
+    filterplacesData();
+  }, [fullPlacesData]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#eee" }}>
       <View style={{ backgroundColor: "white" }}>
-        <HeaderTabs />
+        <HeaderTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         <SearchBar setSearchCity={setSearchCity} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Categories />
-        <RestaurentItems restaurentData={restaurentData} />
+        <RestaurentItems
+          restaurantData={activeTab === "Restaurant" ? restaurantData : barData}
+        />
       </ScrollView>
+      <Divider width={1} />
+      <BottomTabs />
     </View>
   );
 }

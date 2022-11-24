@@ -3,48 +3,49 @@ import React from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { GOOGLE_PLACES_API_KEY } from "@env";
 
-const localRestaurents = [
-  {
-    name: "FarmHouse Kitchen Thai Cusine",
-    image_url: require("../assets/images/bg1.jpg"),
-    categories: ["Cafe", "Bar"],
-    price: "$$",
-    reviews: 0,
-    rating: 4.5,
-  },
-  {
-    name: "FarmHouse Kitchen Thai Cusine",
-    image_url: require("../assets/images/bg1.jpg"),
-    categories: ["Cafe", "Bar"],
-    price: "$$",
-    reviews: 0,
-    rating: 4.5,
-  },
-  {
-    name: "FarmHouse Kitchen Thai Cusine",
-    image_url: require("../assets/images/bg1.jpg"),
-    categories: ["Cafe", "Bar"],
-    price: "$$",
-    reviews: 0,
-    rating: 4.5,
-  },
-];
+
+// const localRestaurents = [
+//   {
+//     name: "FarmHouse Kitchen Thai Cusine",
+//     image_url: require("../../assets/images/bg1.jpg"),
+//     categories: ["Cafe", "Bar"],
+//     price: "$$",
+//     reviews: 0,
+//     rating: 4.5,
+//   },
+//   {
+//     name: "FarmHouse Kitchen Thai Cusine",
+//     image_url: require("../assets/images/bg1.jpg"),
+//     categories: ["Cafe", "Bar"],
+//     price: "$$",
+//     reviews: 0,
+//     rating: 4.5,
+//   },
+//   {
+//     name: "FarmHouse Kitchen Thai Cusine",
+//     image_url: require("../assets/images/bg1.jpg"),
+//     categories: ["Cafe", "Bar"],
+//     price: "$$",
+//     reviews: 0,
+//     rating: 4.5,
+//   },
+// ];
 
 const RestaurentImage = ({ restaurent }) => {
   return (
     <>
       {restaurent.image_id == "NO_PICS_AVAILABLE" ? (
         <Image
-          source={require("../assets/images/blanckImg.jpg")}
+          source={require("../../assets/images/bg1.jpg")}
           style={{ width: "100%", height: 180 }}
         />
       ) : (
         <Image
           //alter comments for real world workings
-          //source={require("../assets/images/bg1.jpg")}
-          source={{
-            uri: `https://maps.googleapis.com/maps/api/place/photo?maxheight=180&photo_reference=${restaurent.image_id}&key=${GOOGLE_PLACES_API_KEY}`,
-          }}
+          source={require("../../assets/images/bg1.jpg")}
+          // source={{
+          //   uri: `https://maps.googleapis.com/maps/api/place/photo?maxheight=180&photo_reference=${restaurent.image_id}&key=${GOOGLE_PLACES_API_KEY}`,
+          // }}
           style={{ width: "100%", height: 180 }}
         />
       )}
@@ -117,10 +118,10 @@ const ReastaurentInfo = ({ restaurent }) => {
   );
 };
 
-function RestaurentItems({ restaurentData }) {
+function RestaurentItems({ restaurantData }) {
   return (
     <>
-      {restaurentData.map((restaurent, index) => (
+      {restaurantData.map((restaurent, index) => (
         <TouchableOpacity
           activeOpacity={1}
           style={{ marginBottom: 10 }}
@@ -136,5 +137,5 @@ function RestaurentItems({ restaurentData }) {
   );
 }
 
-export { localRestaurents };
+//export { localRestaurents };
 export default RestaurentItems;
