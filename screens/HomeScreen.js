@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, PermissionsAndroid } from "react-native";
 import React, { useEffect, useState } from "react";
 import Geolocation from "react-native-geolocation-service";
+import Geocoder from "react-native-geocoding";
 import axios from "axios";
 import { GOOGLE_PLACES_API_KEY } from "@env";
 
@@ -12,10 +13,11 @@ import RestaurentItems from "../components/RestaurentItems";
 import { localRestaurents } from "../components/RestaurentItems";
 
 export default function HomeScreen() {
-  const [restaurentData, setrestaurentData] = useState(localRestaurents);
+  const [restaurentData1, setrestaurentData1] = useState(localRestaurents);
   const [location, setLocation] = useState();
   const [fullRestaurentData, setfullRestaurentData] = useState([]);
-  const [restaurentData1, setrestaurentData1] = useState([]);
+  const [restaurentData, setrestaurentData] = useState([]);
+  const [searchCity, setSearchCity] = useState(" ");
 
   const dummyResData = [
     {
@@ -273,33 +275,45 @@ export default function HomeScreen() {
     }
   };
 
-  const getUserLocationInLatLong = () => {
+  const getUserLocationInLatLong = (searchCity) => {
     let result = requestLocationPermission();
+
     result
       .then(() => {
-        Geolocation.getCurrentPosition(
-          (position) => {
-            console.log(
-              position,
-              position.coords.latitude,
-              position.coords.longitude
-            );
-            setLocation(position);
-          },
-          (error) => {
-            console.log(error.code, error.message);
-          },
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-        );
+        if (searchCity === " ") {
+          Geolocation.getCurrentPosition(
+            (position) => {
+              console.log(
+                position,
+                position.coords.latitude,
+                position.coords.longitude
+              );
+              setLocation({"lat":position.coords.latitude,"lng": position.coords.longitude });
+            },
+            (error) => {
+              console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+          );
+        } else {
+          //convert user string to lat and long
+          Geocoder.from(searchCity)
+            .then((json) => {
+              var location1 = json.results[0].geometry.location;
+              console.log("*-*-*-*", location1);
+              setLocation(location1)
+            })
+            .catch((error) => console.warn(error.origin));
+        }
       })
       .catch((error) => console.log(error));
   };
 
   const getRestaurentsNearLocation = async () => {
-    if (location.coords.latitude && location.coords.longitude) {
+    if (location.lat && location.lng) {
       var config = {
         method: "get",
-        url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.coords.latitude}%2C${location.coords.longitude}&radius=1500&type=restaurant&key=${GOOGLE_PLACES_API_KEY}`,
+        url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat}%2C${location.lng}&radius=1500&type=restaurant&key=${GOOGLE_PLACES_API_KEY}`,
         headers: {},
       };
 
@@ -314,36 +328,38 @@ export default function HomeScreen() {
   };
 
   const filterResData = () => {
-    const availableRestaurents = dummyResData.filter(
-      (res) => res.business_status !== "CLOSED_PERMANENTLY"
-    );
-    //change comments for real world workings
-    // const availableRestaurents = fullRestaurentData.filter(
+    // const availableRestaurents = dummyResData.filter(
     //   (res) => res.business_status !== "CLOSED_PERMANENTLY"
     // );
+    //change comments for real world workings
+    const availableRestaurents = fullRestaurentData.filter(
+      (res) => res.business_status !== "CLOSED_PERMANENTLY"
+    );
 
     const properResData = availableRestaurents.map((res) => {
       return {
         name: res.name,
         rating: res.rating ? res.rating : "-",
         categories: res.types,
-        image_id: res.photos ? res.photos[0].photo_reference : "NO_PICS_AVAILABLE",
+        image_id: res.photos
+          ? res.photos[0].photo_reference
+          : "NO_PICS_AVAILABLE",
         status: res.business_status == "OPERATIONAL" ? "Open" : "Closed",
       };
     });
 
-    setrestaurentData1(properResData);
+    setrestaurentData(properResData);
 
     //console.log("-----",properResData)
   };
 
   useEffect(() => {
-    getUserLocationInLatLong();
-  }, []);
+    getUserLocationInLatLong(searchCity);
+  }, [searchCity]);
 
   useEffect(() => {
     //costs for every api call--> so use carefully
-    //getRestaurentsNearLocation();
+    getRestaurentsNearLocation();
   }, [location]);
 
   useEffect(() => {
@@ -354,11 +370,11 @@ export default function HomeScreen() {
     <View style={{ flex: 1, backgroundColor: "#eee" }}>
       <View style={{ backgroundColor: "white" }}>
         <HeaderTabs />
-        <SearchBar />
+        <SearchBar setSearchCity={setSearchCity} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Categories />
-        <RestaurentItems restaurentData={restaurentData1} />
+        <RestaurentItems restaurentData={restaurentData} />
       </ScrollView>
     </View>
   );

@@ -3,13 +3,21 @@ import React from "react";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import IoniCons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import {GOOGLE_PLACES_API_KEY} from "@env";
 
-function SearchBar() {
+function SearchBar({setSearchCity}) {
   return (
     <View
       style={{ marginVertical: 15, marginHorizontal: 10, flexDirection: "row" }}
     >
       <GooglePlacesAutocomplete
+      query={{key:`${GOOGLE_PLACES_API_KEY}`}}
+        onPress={(data, details= null) => {
+          console.log("search text",data.description);
+          const cityName = data.description.split(',')[0];
+          console.log("cityName",cityName);
+          setSearchCity(cityName);
+        }}
         placeholder="Search"
         styles={{
           textInput: {

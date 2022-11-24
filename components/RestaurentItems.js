@@ -41,10 +41,10 @@ const RestaurentImage = ({ restaurent }) => {
       ) : (
         <Image
           //alter comments for real world workings
-          source={require("../assets/images/bg1.jpg")}
-          // source={{
-          //   uri: `https://maps.googleapis.com/maps/api/place/photo?maxheight=180&photo_reference=${restaurent.image_id}&key=${GOOGLE_PLACES_API_KEY}`,
-          // }}
+          //source={require("../assets/images/bg1.jpg")}
+          source={{
+            uri: `https://maps.googleapis.com/maps/api/place/photo?maxheight=180&photo_reference=${restaurent.image_id}&key=${GOOGLE_PLACES_API_KEY}`,
+          }}
           style={{ width: "100%", height: 180 }}
         />
       )}

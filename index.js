@@ -3,7 +3,9 @@ if(__DEV__) {
   }
 
 import { registerRootComponent } from 'expo';
-
+import Geocoder from 'react-native-geocoding';
+import { GOOGLE_PLACES_API_KEY } from "@env";
+Geocoder.init(GOOGLE_PLACES_API_KEY, {language : "en"});
 
 import App from './App';
 
