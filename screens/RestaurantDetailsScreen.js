@@ -7,9 +7,13 @@ import MenuItems from "../components/restaurantDetails/MenuItems";
 import { useIsFocused } from "@react-navigation/native";
 import reactotron from "reactotron-react-native";
 import ViewCart from "../components/restaurantDetails/ViewCart";
+import { useSelector } from "react-redux";
+import { updateItemsInCart } from "../redux/slice";
 
 function RestaurantDetailsScreen({ navigation, route }) {
   const isFocussedDetails = useIsFocused();
+  const itemsIncart = useSelector((state) => state.CartRes.cartItems);
+  console.log("******", itemsIncart);
 
   useEffect(() => {
     if (isFocussedDetails) {
@@ -23,8 +27,12 @@ function RestaurantDetailsScreen({ navigation, route }) {
     <View style={{ flex: 1 }}>
       <About route={route} />
       <Divider width={1} style={{ marginBottom: 20 }} />
-      <MenuItems />
-      <ViewCart  navigation = {navigation} restaurantName = {route.params.name} />
+      <MenuItems restaurantName={route.params.name} />
+      {itemsIncart.length > 0 ? (
+        <ViewCart navigation={navigation} restaurantName={route.params.name} />
+      ) : (
+        <></>
+      )}
     </View>
   );
 }

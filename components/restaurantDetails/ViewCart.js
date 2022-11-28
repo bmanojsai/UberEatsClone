@@ -1,7 +1,12 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
+import { useSelector } from "react-redux";
 
 function ViewCart({ navigation, restaurantName }) {
+    const itemsIncart = useSelector((state) => state.CartRes.cartItems);
+    
+    const totalCost = itemsIncart.map((item) => Number(item.price.replace("$",""))).reduce((prev,curr) => prev+curr , 0);
+
   return (
     <View style = {{
         flex : 1,
@@ -28,9 +33,12 @@ function ViewCart({ navigation, restaurantName }) {
             borderRadius: 30,
             marginTop: 20,
             position: "relative",// dont know why i added :(
+            flexDirection : "row",
+            justifyContent : "space-around"
           }}
         >
           <Text style={{ color: "white", fontSize: 20 }}>ViewCart</Text>
+          <Text style = {{color : "white", fontSize : 20}}>${totalCost}</Text>
         </TouchableOpacity>
       </View>
     </View>
