@@ -6,6 +6,7 @@ import { Divider } from "react-native-elements";
 import MenuItems from "../components/restaurantDetails/MenuItems";
 import { useIsFocused } from "@react-navigation/native";
 import reactotron from "reactotron-react-native";
+import ViewCart from "../components/restaurantDetails/ViewCart";
 
 function RestaurantDetailsScreen({ navigation, route }) {
   const isFocussedDetails = useIsFocused();
@@ -23,6 +24,7 @@ function RestaurantDetailsScreen({ navigation, route }) {
       <About route={route} />
       <Divider width={1} style={{ marginBottom: 20 }} />
       <MenuItems />
+      <ViewCart  navigation = {navigation} restaurantName = {route.params.name} />
     </View>
   );
 }
