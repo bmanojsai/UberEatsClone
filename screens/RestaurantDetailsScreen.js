@@ -1,22 +1,30 @@
-import { View, Text} from 'react-native'
-import React , {useEffect}from 'react'
-import About from '../components/restaurantDetails/About';
-import ImmersiveMode from 'react-native-immersive-mode';
-import {Divider} from 'react-native-elements';
+import { View, Text } from "react-native";
+import React, { useEffect } from "react";
+import About from "../components/restaurantDetails/About";
+import ImmersiveMode from "react-native-immersive-mode";
+import { Divider } from "react-native-elements";
+import MenuItems from "../components/restaurantDetails/MenuItems";
+import { useIsFocused } from "@react-navigation/native";
+import reactotron from "reactotron-react-native";
 
-function RestaurantDetailsScreen() {
+function RestaurantDetailsScreen({ navigation, route }) {
+  const isFocussedDetails = useIsFocused();
+
   useEffect(() => {
-    ImmersiveMode.fullLayout(true);
-    ImmersiveMode.setBarTranslucent(true);
-  }, [])
-  
+    if (isFocussedDetails) {
+      ImmersiveMode.fullLayout(true);
+      ImmersiveMode.setBarTranslucent(true);
+      reactotron.log("executing in Details");
+    }
+  }, [isFocussedDetails]);
+
   return (
-    <View>
-      <About />
-      <Divider width = {1} />
+    <View style={{ flex: 1 }}>
+      <About route={route} />
+      <Divider width={1} style={{ marginBottom: 20 }} />
+      <MenuItems />
     </View>
-  )
+  );
 }
 
-
-export default  RestaurantDetailsScreen;
+export default RestaurantDetailsScreen;

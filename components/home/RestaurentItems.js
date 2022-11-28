@@ -4,33 +4,6 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { GOOGLE_PLACES_API_KEY } from "@env";
 
 
-// const localRestaurents = [
-//   {
-//     name: "FarmHouse Kitchen Thai Cusine",
-//     image_url: require("../../assets/images/bg1.jpg"),
-//     categories: ["Cafe", "Bar"],
-//     price: "$$",
-//     reviews: 0,
-//     rating: 4.5,
-//   },
-//   {
-//     name: "FarmHouse Kitchen Thai Cusine",
-//     image_url: require("../assets/images/bg1.jpg"),
-//     categories: ["Cafe", "Bar"],
-//     price: "$$",
-//     reviews: 0,
-//     rating: 4.5,
-//   },
-//   {
-//     name: "FarmHouse Kitchen Thai Cusine",
-//     image_url: require("../assets/images/bg1.jpg"),
-//     categories: ["Cafe", "Bar"],
-//     price: "$$",
-//     reviews: 0,
-//     rating: 4.5,
-//   },
-// ];
-
 const RestaurentImage = ({ restaurent }) => {
   return (
     <>
@@ -118,7 +91,7 @@ const ReastaurentInfo = ({ restaurent }) => {
   );
 };
 
-function RestaurentItems({ restaurantData }) {
+function RestaurentItems({ restaurantData, navigation }) {
   return (
     <>
       {restaurantData.map((restaurent, index) => (
@@ -126,6 +99,7 @@ function RestaurentItems({ restaurantData }) {
           activeOpacity={1}
           style={{ marginBottom: 10 }}
           key={index}
+          onPress = {() => navigation.navigate("Details", restaurent)}
         >
           <View style={{ marginTop: 5, padding: 15, backgroundColor: "white" }}>
             <RestaurentImage restaurent={restaurent} />

@@ -4,26 +4,34 @@ import Geolocation from "react-native-geolocation-service";
 import Geocoder from "react-native-geocoding";
 import axios from "axios";
 import { GOOGLE_PLACES_API_KEY } from "@env";
-import Reactotron from "reactotron-react-native";
+import reactotron from "reactotron-react-native";
 
 import HeaderTabs from "../components/home/HeaderTabs";
 import SearchBar from "../components/home/SearchBar";
 import Categories from "../components/home/Categories";
 import RestaurentItems from "../components/home/RestaurentItems";
-
-import { localRestaurents } from "../components/home/RestaurentItems";
-import reactotron from "reactotron-react-native";
-import {Divider} from "react-native-elements";
 import BottomTabs from "../components/home/BottomTabs";
 
-export default function HomeScreen() {
-  //const [oldLocation, setOldLocation] = useState({});
+import { Divider } from "react-native-elements";
+import ImmersiveMode from "react-native-immersive-mode";
+import { useIsFocused } from "@react-navigation/native";
+
+export default function HomeScreen({ navigation }) {
   const [location, setLocation] = useState({});
   const [fullPlacesData, setFullPLacesData] = useState([]);
   const [restaurantData, setrestaurantData] = useState([]);
   const [barData, setBarData] = useState([]);
   const [searchCity, setSearchCity] = useState(" ");
   const [activeTab, setActiveTab] = useState("Restaurant");
+  const isFocussedHome = useIsFocused();
+
+  useEffect(() => {
+    if (isFocussedHome) {
+      ImmersiveMode.fullLayout(false);
+      ImmersiveMode.setBarTranslucent(false);
+      reactotron.log("executing in Home");
+    }
+  }, [isFocussedHome]);
 
   const dummyplacesData = [
     {
@@ -296,10 +304,6 @@ export default function HomeScreen() {
               );
               setrestaurantData([]);
               setBarData([]);
-              // setOldLocation({
-              //   lat: position.coords.latitude,
-              //   lng: position.coords.longitude,
-              // });
               setLocation({
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
@@ -318,18 +322,10 @@ export default function HomeScreen() {
               console.log("*-*-*-*", location1);
               setrestaurantData([]);
               setBarData([]);
-              //setOldLocation(location);
               setLocation(location1);
             })
             .catch((error) => console.warn(error.origin));
         }
-        // Reactotron.log(
-        //   "In getLocalatLng func --> ",
-        //   oldLocation,
-        //   location,
-        //   restaurantData,
-        //   barData
-        // );
       })
       .catch((error) => console.log(error));
   };
@@ -347,8 +343,7 @@ export default function HomeScreen() {
       };
 
       try {
-        
-        Reactotron.log(activeTab,restaurantData,barData)
+        reactotron.log(activeTab, restaurantData, barData);
         if (activeTab == "Restaurant" && restaurantData.length == 0) {
           const placesData = await axios(config);
           console.log("********", placesData.data.results);
@@ -366,19 +361,13 @@ export default function HomeScreen() {
           // console.log("********", placesData.data.results);
           // setFullPLacesData(placesData.data.results);
           // reactotron.log("different locations");
-          Reactotron.log("Nothing is happening")
+          reactotron.log("Nothing is happening");
         }
       } catch (error) {
         console.log("error while getting places", error);
       }
     }
-    // Reactotron.log(
-    //   "In getPlacesNearLocation func --> ",
-    //   oldLocation,
-    //   location,
-    //   restaurantData,
-    //   barData
-    // );
+   
   };
 
   const filterplacesData = () => {
@@ -399,6 +388,8 @@ export default function HomeScreen() {
           ? res.photos[0].photo_reference
           : "NO_PICS_AVAILABLE",
         status: res.business_status == "OPERATIONAL" ? "Open" : "Closed",
+        reviews: res.user_ratings_total,
+        location: res.vicinity,
       };
     });
 
@@ -407,24 +398,15 @@ export default function HomeScreen() {
     } else {
       setBarData(properplacesData);
     }
-
-    // Reactotron.log(
-    //   "In filterplacesData func --> ",
-    //   oldLocation,
-    //   location,
-    //   restaurantData,
-    //   barData
-    // );
-
-    //console.log("-----",properplacesData)
   };
 
   useEffect(() => {
-    //getUserLocationInLatLong(searchCity);
+   // getUserLocationInLatLong(searchCity);
   }, [searchCity]);
 
   useEffect(() => {
     //costs for every api call--> so use carefully
+    //also costs for every search, every image loading
     //getPlacesNearLocation();
   }, [location, activeTab]);
 
@@ -442,6 +424,7 @@ export default function HomeScreen() {
         <Categories />
         <RestaurentItems
           restaurantData={activeTab === "Restaurant" ? restaurantData : barData}
+          navigation={navigation}
         />
       </ScrollView>
       <Divider width={1} />
