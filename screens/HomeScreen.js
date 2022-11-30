@@ -371,13 +371,13 @@ export default function HomeScreen({ navigation }) {
   };
 
   const filterplacesData = () => {
-    const availableRestaurents = dummyplacesData.filter(
-      (res) => res.business_status !== "CLOSED_PERMANENTLY"
-    );
-    //change comments for real world workings
-    // const availableRestaurents = fullPlacesData.filter(
+    // const availableRestaurents = dummyplacesData.filter(
     //   (res) => res.business_status !== "CLOSED_PERMANENTLY"
     // );
+    //change comments for real world workings
+    const availableRestaurents = fullPlacesData.filter(
+      (res) => res.business_status !== "CLOSED_PERMANENTLY"
+    );
 
     const properplacesData = availableRestaurents.map((res) => {
       return {
@@ -401,13 +401,13 @@ export default function HomeScreen({ navigation }) {
   };
 
   useEffect(() => {
-   // getUserLocationInLatLong(searchCity);
+   getUserLocationInLatLong(searchCity);
   }, [searchCity]);
 
   useEffect(() => {
     //costs for every api call--> so use carefully
     //also costs for every search, every image loading
-    //getPlacesNearLocation();
+    getPlacesNearLocation();
   }, [location, activeTab]);
 
   useEffect(() => {

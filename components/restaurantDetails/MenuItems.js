@@ -5,14 +5,22 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { useSelector, useDispatch } from "react-redux";
 import { updateItemsInCart } from "../../redux/slice";
 
-const FoodItem = ({ title, image, description, price ,restaurantName}) => {
+const FoodItem = ({
+  title,
+  image,
+  description,
+  price,
+  restaurantName,
+  hideCheckbox,
+}) => {
   const dispatch = useDispatch();
   const itemsIncart = useSelector((state) => state.CartRes.cartItems);
-  
 
-  function isItemINCart(){
-    const newList = itemsIncart.filter((item) => item.title == title && item.restaurantName == restaurantName);
-    console.log("&&&&&&&&",itemsIncart, itemsIncart.length);
+  function isItemINCart() {
+    const newList = itemsIncart.filter(
+      (item) => item.title == title && item.restaurantName == restaurantName
+    );
+    console.log("&&&&&&&&", itemsIncart, itemsIncart.length);
     return newList.length;
   }
 
@@ -27,7 +35,22 @@ const FoodItem = ({ title, image, description, price ,restaurantName}) => {
         marginLeft: 20,
       }}
     >
-      <BouncyCheckbox iconStyle={{ borderColor: "#eee" }} fillColor="green" onPress={(checkboxValue) => dispatch(updateItemsInCart({ food :{ title, image, description, price ,restaurantName},checkboxValue}))}  isChecked = {isItemINCart()} />
+      {!hideCheckbox && (
+        <BouncyCheckbox
+          iconStyle={{ borderColor: "#eee" }}
+          fillColor="green"
+          onPress={(checkboxValue) =>
+            dispatch(
+              updateItemsInCart({
+                food: { title, image, description, price, restaurantName },
+                checkboxValue,
+              })
+            )
+          }
+          isChecked={isItemINCart()}
+        />
+      )}
+
       <View style={{ flex: 1 }}>
         <Text style={{ fontSize: 18, fontWeight: "500" }}>{title}</Text>
         <Text style={{ marginVertical: 5, fontSize: 13, fontWeight: "400" }}>
@@ -52,7 +75,7 @@ const FoodItem = ({ title, image, description, price ,restaurantName}) => {
   );
 };
 
-function MenuItems({restaurantName}) {
+function MenuItems({ restaurantName }) {
   const items = [
     {
       title: "Chicken Tandoori",
@@ -105,7 +128,7 @@ function MenuItems({restaurantName}) {
             description={menuItem.description}
             price={menuItem.price}
             image={menuItem.image}
-            restaurantName = {restaurantName}
+            restaurantName={restaurantName}
           />
           <Divider
             width={0.5}
@@ -114,9 +137,10 @@ function MenuItems({restaurantName}) {
           />
         </View>
       ))}
-      <View style = {{height : 150}}></View>
+      <View style={{ height: 150 }}></View>
     </ScrollView>
   );
 }
 
+export { FoodItem };
 export default MenuItems;

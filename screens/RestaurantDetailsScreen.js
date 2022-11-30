@@ -13,7 +13,7 @@ import { updateItemsInCart } from "../redux/slice";
 function RestaurantDetailsScreen({ navigation, route }) {
   const isFocussedDetails = useIsFocused();
   const itemsIncart = useSelector((state) => state.CartRes.cartItems);
-  console.log("******", itemsIncart);
+  // console.log("******", itemsIncart);
 
   useEffect(() => {
     if (isFocussedDetails) {

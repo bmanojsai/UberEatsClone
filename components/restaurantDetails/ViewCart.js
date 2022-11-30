@@ -59,17 +59,24 @@ function ViewCart({ navigation, restaurantName }) {
     .map((item) => Number(item.price.replace("$", "")))
     .reduce((prev, curr) => prev + curr, 0);
 
-  const addOrderToFirebase = (items, restaurantName) => {
-    const db = firebase.firestore();
-    db.collection("orders")
-      .add({
-        items: items,
-        restaurantName: restaurantName,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      })
-      .then((res) => console.log("-*-*-*-", res))
-      .catch((err) => console.log("err", err));
+  const addOrderToFirebase = async () => {
+    // below steps to add data to firebase is taking very much time. so i commented it out
+    // const db = firebase.firestore();
+    // try {
+    //   let response = await db.collection("orders").add({
+    //     items: itemsIncart,
+    //     restaurantName: restaurantName,
+    //     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    //   });
+
+    //   console.log("response", response);
+    // } catch (err) {
+    //   console.log("errorr", err);
+    // }
+
     setModalVisible(false);
+    console.log("This is sss");
+    navigation.navigate("OrderCompleted", {restaurantName : restaurantName});
   };
 
   const checkoutModalContent = () => {
@@ -100,8 +107,8 @@ function ViewCart({ navigation, restaurantName }) {
             >
               {restaurantName}
             </Text>
-            {itemsIncart.map((item) => (
-              <OrderItem title={item.title} price={item.price} />
+            {itemsIncart.map((item, index) => (
+              <OrderItem key={index} title={item.title} price={item.price} />
             ))}
             <SubTotal totalCost={totalCost} />
           </View>
@@ -121,7 +128,7 @@ function ViewCart({ navigation, restaurantName }) {
                 flexDirection: "row",
                 justifyContent: "space-around",
               }}
-              onPress={() => setModalVisible(false)}
+              onPress={() => addOrderToFirebase()}
             >
               <Text style={{ color: "white" }}>Checkout</Text>
               <Text style={{ color: "white" }}>${totalCost}</Text>
@@ -138,7 +145,7 @@ function ViewCart({ navigation, restaurantName }) {
         animationType="slide"
         visible={modalVisible}
         transparent={true}
-        onRequestClose={() => addOrderToFirebase(itemsIncart, restaurantName)}
+        onRequestClose={() => setModalVisible(false)}
       >
         {checkoutModalContent()}
       </Modal>

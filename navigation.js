@@ -6,7 +6,7 @@ import store from "./redux/store";
 
 import HomeScreen from "./screens/HomeScreen";
 import RestaurantDetailsScreen from "./screens/RestaurantDetailsScreen";
-
+import OrderCompletedScreen from "./screens/OrderCompletedScreen";
 
 
 function RootNavigation() {
@@ -22,6 +22,7 @@ function RootNavigation() {
             <stack.Navigator screenOptions={screenOptions} initialRouteName = "Home">
                 <stack.Screen name="Home" component={HomeScreen} />
                 <stack.Screen name="Details" component={RestaurantDetailsScreen} />
+                <stack.Screen name="OrderCompleted" component={OrderCompletedScreen} />
             </stack.Navigator>
         </NavigationContainer>
         </Provider>
